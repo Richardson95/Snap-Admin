@@ -1,6 +1,8 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { formatCurrency, formatNumber } from '@/utils/formatters'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faSearch,
@@ -11,6 +13,7 @@ import {
   faEye,
   faUserPlus,
   faBan,
+  faArrowLeft,
 } from '@fortawesome/free-solid-svg-icons'
 import Image from 'next/image'
 
@@ -62,6 +65,7 @@ const customers = [
 ]
 
 export default function Customers() {
+  const router = useRouter()
   const [searchQuery, setSearchQuery] = useState('')
   const [filterStatus, setFilterStatus] = useState('All')
   const [selectedCustomer, setSelectedCustomer] = useState<any>(null)
@@ -157,6 +161,15 @@ export default function Customers() {
 
   return (
     <div className="p-6 space-y-6">
+      {/* Back Button */}
+      <button
+        onClick={() => router.back()}
+        className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors"
+      >
+        <FontAwesomeIcon icon={faArrowLeft} className="w-4 h-4" />
+        <span className="font-medium">Back</span>
+      </button>
+
       {/* Page Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
@@ -193,7 +206,7 @@ export default function Customers() {
         <div className="bg-white rounded-lg shadow-sm p-4">
           <p className="text-gray-600 text-sm">Total Wallet Balance</p>
           <p className="text-2xl font-bold text-primary mt-1">
-            ₦{customerList.reduce((sum, c) => sum + c.walletBalance, 0).toLocaleString()}
+            {formatCurrency(customerList.reduce((sum, c) => sum + c.walletBalance, 0))}
           </p>
         </div>
       </div>
@@ -286,11 +299,11 @@ export default function Customers() {
                   </td>
                   <td className="px-6 py-4">
                     <span className="text-sm font-medium text-primary">
-                      ₦{customer.walletBalance.toLocaleString()}
+                      {formatCurrency(customer.walletBalance)}
                     </span>
                   </td>
                   <td className="px-6 py-4">
-                    <span className="text-sm text-gray-900">{customer.totalOrders}</span>
+                    <span className="text-sm text-gray-900">{formatNumber(customer.totalOrders)}</span>
                   </td>
                   <td className="px-6 py-4">
                     <span className="text-sm text-gray-900">{customer.joinDate}</span>
@@ -361,7 +374,7 @@ export default function Customers() {
               <div>
                 <p className="text-sm text-gray-600">Current Balance</p>
                 <p className="font-medium text-primary">
-                  ₦{selectedCustomer.walletBalance.toLocaleString()}
+                  {formatCurrency(selectedCustomer.walletBalance)}
                 </p>
               </div>
               <div>

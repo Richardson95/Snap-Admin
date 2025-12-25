@@ -1,6 +1,8 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { formatCurrency, formatNumber } from '@/utils/formatters'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faCalendar,
@@ -9,6 +11,7 @@ import {
   faShoppingBag,
   faUsers,
   faTruck,
+  faArrowLeft,
 } from '@fortawesome/free-solid-svg-icons'
 import {
   LineChart,
@@ -66,10 +69,20 @@ const topRoutes = [
 ]
 
 export default function Analytics() {
+  const router = useRouter()
   const [dateRange, setDateRange] = useState('30days')
 
   return (
     <div className="p-6 space-y-6">
+      {/* Back Button */}
+      <button
+        onClick={() => router.back()}
+        className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors"
+      >
+        <FontAwesomeIcon icon={faArrowLeft} className="w-4 h-4" />
+        <span className="font-medium">Back</span>
+      </button>
+
       {/* Page Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
@@ -100,7 +113,7 @@ export default function Analytics() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-blue-100 text-sm">Total Revenue</p>
-              <h3 className="text-3xl font-bold mt-2">₦5.65M</h3>
+              <h3 className="text-3xl font-bold mt-2">{formatCurrency(5650000)}</h3>
               <p className="text-blue-100 text-sm mt-2">+18.2% from last period</p>
             </div>
             <div className="bg-white bg-opacity-20 w-12 h-12 rounded-lg flex items-center justify-center">
@@ -113,7 +126,7 @@ export default function Analytics() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-green-100 text-sm">Total Orders</p>
-              <h3 className="text-3xl font-bold mt-2">3,021</h3>
+              <h3 className="text-3xl font-bold mt-2">{formatNumber(3021)}</h3>
               <p className="text-green-100 text-sm mt-2">+12.5% from last period</p>
             </div>
             <div className="bg-white bg-opacity-20 w-12 h-12 rounded-lg flex items-center justify-center">
@@ -126,7 +139,7 @@ export default function Analytics() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-purple-100 text-sm">New Customers</p>
-              <h3 className="text-3xl font-bold mt-2">856</h3>
+              <h3 className="text-3xl font-bold mt-2">{formatNumber(856)}</h3>
               <p className="text-purple-100 text-sm mt-2">+24.3% from last period</p>
             </div>
             <div className="bg-white bg-opacity-20 w-12 h-12 rounded-lg flex items-center justify-center">
@@ -162,8 +175,15 @@ export default function Analytics() {
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
             <XAxis dataKey="month" stroke="#888" />
-            <YAxis stroke="#888" />
-            <Tooltip />
+            <YAxis stroke="#888" tickFormatter={(value) => formatCurrency(value)} />
+            <Tooltip
+              formatter={(value: any, name: any) => {
+                if (name === 'revenue') return [formatCurrency(value), 'Revenue']
+                if (name === 'orders') return [formatNumber(value), 'Orders']
+                if (name === 'customers') return [formatNumber(value), 'Customers']
+                return [value, name]
+              }}
+            />
             <Legend />
             <Area
               type="monotone"
@@ -211,7 +231,13 @@ export default function Analytics() {
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
               <XAxis dataKey="day" stroke="#888" />
               <YAxis stroke="#888" />
-              <Tooltip />
+              <Tooltip
+                formatter={(value: any, name: any) => {
+                  if (name === 'deliveries') return [formatNumber(value), 'Deliveries']
+                  if (name === 'avgTime') return [value + ' min', 'Avg Time']
+                  return [value, name]
+                }}
+              />
               <Legend />
               <Bar dataKey="deliveries" fill="#FF3333" radius={[8, 8, 0, 0]} />
             </BarChart>
@@ -255,16 +281,16 @@ export default function Analytics() {
                     <span className="text-sm font-medium text-gray-900">{route.route}</span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="text-sm text-gray-900">{route.orders}</span>
+                    <span className="text-sm text-gray-900">{formatNumber(route.orders)}</span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className="text-sm font-medium text-primary">
-                      ₦{route.revenue.toLocaleString()}
+                      {formatCurrency(route.revenue)}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className="text-sm text-gray-900">
-                      ₦{Math.round(route.revenue / route.orders).toLocaleString()}
+                      {formatCurrency(Math.round(route.revenue / route.orders))}
                     </span>
                   </td>
                 </tr>

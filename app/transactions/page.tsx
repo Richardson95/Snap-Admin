@@ -1,6 +1,8 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { formatCurrency } from '@/utils/formatters'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faSearch,
@@ -11,6 +13,7 @@ import {
   faWallet,
   faCreditCard,
   faMoneyBill,
+  faArrowLeft,
 } from '@fortawesome/free-solid-svg-icons'
 
 const transactions = [
@@ -77,6 +80,7 @@ const transactions = [
 ]
 
 export default function Transactions() {
+  const router = useRouter()
   const [searchQuery, setSearchQuery] = useState('')
   const [filterType, setFilterType] = useState('All')
   const [filterStatus, setFilterStatus] = useState('All')
@@ -126,6 +130,15 @@ export default function Transactions() {
 
   return (
     <div className="p-6 space-y-6">
+      {/* Back Button */}
+      <button
+        onClick={() => router.back()}
+        className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors"
+      >
+        <FontAwesomeIcon icon={faArrowLeft} className="w-4 h-4" />
+        <span className="font-medium">Back</span>
+      </button>
+
       {/* Page Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
@@ -147,13 +160,13 @@ export default function Transactions() {
         <div className="bg-white rounded-lg shadow-sm p-4">
           <p className="text-gray-600 text-sm">Completed</p>
           <p className="text-2xl font-bold text-green-600 mt-1">
-            ₦{totalCompleted.toLocaleString()}
+            {formatCurrency(totalCompleted)}
           </p>
         </div>
         <div className="bg-white rounded-lg shadow-sm p-4">
           <p className="text-gray-600 text-sm">Pending</p>
           <p className="text-2xl font-bold text-yellow-600 mt-1">
-            ₦{totalPending.toLocaleString()}
+            {formatCurrency(totalPending)}
           </p>
         </div>
         <div className="bg-white rounded-lg shadow-sm p-4">
@@ -266,7 +279,7 @@ export default function Transactions() {
                         txn.type === 'Refund' ? 'text-red-600' : 'text-green-600'
                       }`}
                     >
-                      {txn.type === 'Refund' ? '-' : '+'}₦{txn.amount.toLocaleString()}
+                      {txn.type === 'Refund' ? '-' : '+'}{formatCurrency(txn.amount)}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">

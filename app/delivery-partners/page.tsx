@@ -1,6 +1,8 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { formatCurrency, formatNumber } from '@/utils/formatters'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faSearch,
@@ -13,6 +15,7 @@ import {
   faBicycle,
   faCheckCircle,
   faTimesCircle,
+  faArrowLeft,
 } from '@fortawesome/free-solid-svg-icons'
 import Image from 'next/image'
 
@@ -80,6 +83,7 @@ const deliveryPartners = [
 ]
 
 export default function DeliveryPartners() {
+  const router = useRouter()
   const [searchQuery, setSearchQuery] = useState('')
   const [filterStatus, setFilterStatus] = useState('All')
   const [partnerList, setPartnerList] = useState(deliveryPartners)
@@ -186,6 +190,15 @@ export default function DeliveryPartners() {
 
   return (
     <div className="p-6 space-y-6">
+      {/* Back Button */}
+      <button
+        onClick={() => router.back()}
+        className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors"
+      >
+        <FontAwesomeIcon icon={faArrowLeft} className="w-4 h-4" />
+        <span className="font-medium">Back</span>
+      </button>
+
       {/* Page Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
@@ -222,7 +235,7 @@ export default function DeliveryPartners() {
         <div className="bg-white rounded-lg shadow-sm p-4">
           <p className="text-gray-600 text-sm">Total Earnings</p>
           <p className="text-2xl font-bold text-primary mt-1">
-            ₦{partnerList.reduce((sum, p) => sum + p.earnings, 0).toLocaleString()}
+            {formatCurrency(partnerList.reduce((sum, p) => sum + p.earnings, 0))}
           </p>
         </div>
       </div>
@@ -279,7 +292,7 @@ export default function DeliveryPartners() {
                   <div className="flex items-center gap-1 mt-1">
                     <FontAwesomeIcon icon={faStar} className="text-yellow-400 w-4 h-4" />
                     <span className="text-sm font-medium text-gray-700">{partner.rating}</span>
-                    <span className="text-xs text-gray-500">({partner.totalDeliveries} deliveries)</span>
+                    <span className="text-xs text-gray-500">({formatNumber(partner.totalDeliveries)} deliveries)</span>
                   </div>
                 </div>
               </div>
@@ -302,11 +315,11 @@ export default function DeliveryPartners() {
               <div className="grid grid-cols-2 gap-4 pt-3 border-t border-gray-200">
                 <div>
                   <p className="text-xs text-gray-500">Active Deliveries</p>
-                  <p className="text-lg font-bold text-gray-800">{partner.activeDeliveries}</p>
+                  <p className="text-lg font-bold text-gray-800">{formatNumber(partner.activeDeliveries)}</p>
                 </div>
                 <div>
                   <p className="text-xs text-gray-500">Total Earnings</p>
-                  <p className="text-lg font-bold text-primary">₦{partner.earnings.toLocaleString()}</p>
+                  <p className="text-lg font-bold text-primary">{formatCurrency(partner.earnings)}</p>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
