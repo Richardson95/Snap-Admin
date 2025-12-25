@@ -35,7 +35,7 @@ export default function Sidebar() {
       {/* Mobile Menu Button */}
       <button
         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-        className="lg:hidden fixed top-4 left-4 z-50 bg-primary text-white p-3 rounded-lg shadow-lg"
+        className="lg:hidden fixed top-3 right-4 z-50 bg-primary text-white p-2.5 rounded-lg shadow-lg"
       >
         <FontAwesomeIcon icon={isSidebarOpen ? faTimes : faBars} className="w-5 h-5" />
       </button>

@@ -1,6 +1,8 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { formatCurrency } from '@/utils/formatters'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faSearch,
@@ -8,6 +10,7 @@ import {
   faEye,
   faMapMarkerAlt,
   faDownload,
+  faArrowLeft,
 } from '@fortawesome/free-solid-svg-icons'
 import OrderDetailsModal from '@/components/OrderDetailsModal'
 
@@ -94,6 +97,7 @@ const orders = [
 ]
 
 export default function Orders() {
+  const router = useRouter()
   const [selectedOrder, setSelectedOrder] = useState<any>(null)
   const [filterStatus, setFilterStatus] = useState('All')
   const [searchQuery, setSearchQuery] = useState('')
@@ -124,6 +128,15 @@ export default function Orders() {
 
   return (
     <div className="p-6 space-y-6">
+      {/* Back Button */}
+      <button
+        onClick={() => router.back()}
+        className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors"
+      >
+        <FontAwesomeIcon icon={faArrowLeft} className="w-4 h-4" />
+        <span className="font-medium">Back</span>
+      </button>
+
       {/* Page Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
@@ -236,7 +249,7 @@ export default function Orders() {
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    <span className="text-sm font-medium text-gray-900">₦{order.totalAmount.toLocaleString()}</span>
+                    <span className="text-sm font-medium text-gray-900">{formatCurrency(order.totalAmount)}</span>
                   </td>
                   <td className="px-6 py-4">
                     <span

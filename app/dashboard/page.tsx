@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { formatNumber, formatCurrency } from '@/utils/formatters'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faShoppingBag,
@@ -30,35 +31,39 @@ import {
 const stats = [
   {
     title: 'Total Orders',
-    value: '2,845',
+    value: 2845,
     change: '+12.5%',
     isPositive: true,
     icon: faShoppingBag,
     color: 'bg-blue-500',
+    isCurrency: false,
   },
   {
     title: 'Total Revenue',
-    value: '₦8,450,000',
+    value: 8450000,
     change: '+23.8%',
     isPositive: true,
     icon: faMoneyBill,
     color: 'bg-green-500',
+    isCurrency: true,
   },
   {
     title: 'Active Customers',
-    value: '1,247',
+    value: 1247,
     change: '+8.2%',
     isPositive: true,
     icon: faUsers,
     color: 'bg-purple-500',
+    isCurrency: false,
   },
   {
     title: 'Delivery Partners',
-    value: '183',
+    value: 183,
     change: '-2.4%',
     isPositive: false,
     icon: faTruck,
     color: 'bg-primary',
+    isCurrency: false,
   },
 ]
 
@@ -82,28 +87,28 @@ const recentOrders = [
   {
     id: 'ORD-2845',
     customer: 'John Doe',
-    amount: '₦15,500',
+    amount: 15500,
     status: 'Delivered',
     time: '2 mins ago',
   },
   {
     id: 'ORD-2844',
     customer: 'Jane Smith',
-    amount: '₦8,200',
+    amount: 8200,
     status: 'In Transit',
     time: '15 mins ago',
   },
   {
     id: 'ORD-2843',
     customer: 'Mike Johnson',
-    amount: '₦22,000',
+    amount: 22000,
     status: 'Pending',
     time: '1 hour ago',
   },
   {
     id: 'ORD-2842',
     customer: 'Sarah Williams',
-    amount: '₦12,750',
+    amount: 12750,
     status: 'Delivered',
     time: '2 hours ago',
   },
@@ -138,7 +143,9 @@ export default function Dashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-gray-600 text-xs font-medium uppercase">{stat.title}</p>
-                <h3 className="text-xl font-bold text-gray-800 mt-1.5">{stat.value}</h3>
+                <h3 className="text-xl font-bold text-gray-800 mt-1.5">
+                  {stat.isCurrency ? formatCurrency(stat.value) : formatNumber(stat.value)}
+                </h3>
                 <div className="flex items-center gap-1 mt-1.5">
                   <FontAwesomeIcon
                     icon={stat.isPositive ? faArrowUp : faArrowDown}
@@ -205,8 +212,13 @@ export default function Dashboard() {
             <LineChart data={revenueData}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
               <XAxis dataKey="name" stroke="#888" />
-              <YAxis stroke="#888" />
-              <Tooltip />
+              <YAxis stroke="#888" tickFormatter={(value) => formatCurrency(value)} />
+              <Tooltip
+                formatter={(value: any, name: any) => {
+                  if (name === 'revenue') return [formatCurrency(value), 'Revenue']
+                  return [formatNumber(value), name]
+                }}
+              />
               <Legend />
               <Line
                 type="monotone"
@@ -264,7 +276,7 @@ export default function Dashboard() {
                 cx="50%"
                 cy="50%"
                 labelLine={false}
-                label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                label={false}
                 outerRadius={100}
                 fill="#8884d8"
                 dataKey="value"
@@ -273,7 +285,13 @@ export default function Dashboard() {
                   <Cell key={`cell-${index}`} fill={entry.color} />
                 ))}
               </Pie>
-              <Tooltip />
+              <Tooltip
+                formatter={(value: any, name: any, props: any) => {
+                  const total = orderStatusData.reduce((sum, item) => sum + item.value, 0)
+                  const percent = ((value / total) * 100).toFixed(0)
+                  return [`${value.toLocaleString()} (${percent}%)`, name]
+                }}
+              />
             </PieChart>
           </ResponsiveContainer>
         </div>
@@ -315,7 +333,7 @@ export default function Dashboard() {
                     <span className="text-sm text-gray-900">{order.customer}</span>
                   </td>
                   <td className="px-5 py-3 whitespace-nowrap">
-                    <span className="text-sm font-medium text-gray-900">{order.amount}</span>
+                    <span className="text-sm font-medium text-gray-900">{formatCurrency(order.amount)}</span>
                   </td>
                   <td className="px-5 py-3 whitespace-nowrap">
                     <span

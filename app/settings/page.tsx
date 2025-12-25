@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faUser,
@@ -10,9 +11,11 @@ import {
   faMoneyBill,
   faShield,
   faSave,
+  faArrowLeft,
 } from '@fortawesome/free-solid-svg-icons'
 
 export default function Settings() {
+  const router = useRouter()
   const [activeTab, setActiveTab] = useState('profile')
 
   const tabs = [
@@ -25,6 +28,15 @@ export default function Settings() {
 
   return (
     <div className="p-6 space-y-6">
+      {/* Back Button */}
+      <button
+        onClick={() => router.back()}
+        className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors"
+      >
+        <FontAwesomeIcon icon={faArrowLeft} className="w-4 h-4" />
+        <span className="font-medium">Back</span>
+      </button>
+
       {/* Page Header */}
       <div>
         <h1 className="text-3xl font-bold text-gray-800">Settings</h1>
